@@ -10,19 +10,21 @@ import { useGetReply, usePostReply } from "../../hooks/useAPI";
 import usePostReview from "../../store/PostReply";
 import { BREAK_POINT_PHONE } from "../../constant";
 import EmptyData from "../ui/EmptyData";
+import { useState } from "react";
+import Loading from "../ui/Loading";
 
 const notify = () => toast.success(" 후기가 등록되었습니다 🦮");
 
 const Reviews = ({ scoreAvg }) => {
   const { id } = useParams();
-  const { data, isLoading, isError } = useGetReply(id);
+  const { data, isLoading, isError, mutate } = useGetReply(id);
+  const [replyData, setReplyData] = useState();
   const { setReplyLength } = usePostReview();
 
   const {
     replyId,
     context,
     score,
-    placeId,
     setReplyId,
     setContext,
     setScore,
@@ -42,7 +44,11 @@ const Reviews = ({ scoreAvg }) => {
     if (data) {
       setReplyLength(data.data.length);
     }
+    console.log("data: ", data);
   }, [data]);
+
+  if (isLoading) return <Loading/>;
+  if (isError) return <div>ERR...</div>;
 
   const config = {
     replyId,
@@ -59,20 +65,22 @@ const Reviews = ({ scoreAvg }) => {
     if (!score) {
       return toast("평점을 선택해 주세요!", { icon: "⭐️", ...ToastInfo });
     }
-    console.log("config", config);
-    const postReply = usePostReply(config, id);
-    postReply().then((res) => console.log(res));
-    // window.location.reload();
-  };
+    // const postReply = usePostReply(config, id);
+    // postReply();
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>ERR...</div>;
+    await mutate(usePostReply(config, id), {
+      optimisticData: { data: [...data.data, config] },
+      rollbackOnError: true,
+      populateCache: true,
+      revalidate: false,
+    });
+  };
 
   return (
     <ReviewGroup>
       <TopSection>
         <div className="review_score">
-          <Title>후기 {data.data.length}</Title>
+          <Title>후기 {data.data && data.data.length}</Title>
           <Score>
             <Star />
             <ScoreText>{scoreAvg}</ScoreText>
@@ -119,7 +127,11 @@ const Reviews = ({ scoreAvg }) => {
             <Review key={reply.replyId} reply={reply} />
           ))}
 
-          {data.data.length === 0 ? <EmptyData text={"아직 등록된 후기가 없어요."}/> : ""}
+        {data.data && data.data.length === 0 ? (
+          <EmptyData text={"아직 등록된 후기가 없어요."} />
+        ) : (
+          ""
+        )}
       </Reply>
     </ReviewGroup>
   );
@@ -157,8 +169,8 @@ const TopSection = styled.div`
       font-size: 14px;
       gap: 10px;
 
-      span { 
-        width : 25px;
+      span {
+        width: 25px;
       }
     }
 

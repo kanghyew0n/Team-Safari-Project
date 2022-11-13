@@ -8,7 +8,7 @@ import HashTag from "../tags/HashTag";
 import useMenu from "../../store/MenuStore";
 import { useDeleteMyPlace } from "../../hooks/useAPI";
 
-const PlaceCard1 = ({ data, width }) => {
+const PlaceCard = ({ data, width }) => {
   const { menu } = useMenu();
   const [isOpen, ref, handleOpen] = useDetectClose(false);
 
@@ -46,7 +46,9 @@ const PlaceCard1 = ({ data, width }) => {
             )}
             {isOpen ? (
               <Buttons>
+                <Link to={`/place/${data.placeId}`}>
                 <Button>수정</Button>
+                </Link>
                 <Button onClick={onDelete}>삭제</Button>
               </Buttons>
             ) : (
@@ -69,7 +71,6 @@ const PlaceCard1 = ({ data, width }) => {
 const Card = styled.div`
   border: 1px solid #d7e2eb;
   border-radius: 10px;
-  /* min-width: 220px; */
   position: relative;
   width: ${(props) => props.width || ""};
 `;
@@ -77,7 +78,6 @@ const Card = styled.div`
 const PlaceImg = styled.div`
   background-color: #f5f5f5;
   height: 150px;
-  /* height: 100%; */
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   cursor: pointer;
@@ -182,4 +182,4 @@ const Button = styled.div`
   cursor: pointer;
 `;
 
-export default PlaceCard1;
+export default PlaceCard;

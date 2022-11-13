@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import styled from "styled-components";
-import PlaceCard1 from "./PlaceCard1";
+import PlaceCard from "./PlaceCard";
 import { ReactComponent as RightButton } from "../../assets/RightButton.svg";
 import { ReactComponent as LeftButton } from "../../assets/LeftButton.svg";
 import { BREAK_POINT_TABLET } from "../../constant";
@@ -57,7 +57,7 @@ const PlaceCardGroup1 = ({ title, data }) => {
       <Container>
         <Cards ref={cardRef}>
           {data.map((data, idx) => (
-            <PlaceCard1 data={data} key={idx} width={"264px"} />
+            <PlaceCard data={data} key={idx} width={"264px"} />
           ))}
         </Cards>
       </Container>

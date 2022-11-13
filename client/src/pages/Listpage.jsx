@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useGetPlace } from "../hooks/useAPI";
 import Point from "../assets/Point.png";
-import PlaceCard1 from "../components/cards/PlaceCard1";
+import PlaceCard from "../components/cards/PlaceCard";
 import FilterGroup from "../components/filters/FilterGroup";
 import Footer from "../components/Footer";
 import useFilters from "../store/FilterStore";
@@ -66,27 +66,27 @@ const Listpage = () => {
   if (isError) return <div>ERR...</div>;
 
   // const Place = {
-  //   Original: (place) => !searchWord && !filterData.length ? <PlaceCard1 data={place} key={idx} /> : '',
-  //   dedd: (place) => !searchWord && !filterData.length ? <PlaceCard1 data={place} key={idx} /> : '',
-  //   dasd: (place) => !searchWord && !filterData.length ? <PlaceCard1 data={place} key={idx} /> : '',
-  //   dadwd: (place) => !searchWord && !filterData.length ? <PlaceCard1 data={place} key={idx} /> : ''
+  //   Original: (place) => !searchWord && !filterData.length ? <PlaceCard data={place} key={idx} /> : '',
+  //   dedd: (place) => !searchWord && !filterData.length ? <PlaceCard data={place} key={idx} /> : '',
+  //   dasd: (place) => !searchWord && !filterData.length ? <PlaceCard data={place} key={idx} /> : '',
+  //   dadwd: (place) => !searchWord && !filterData.length ? <PlaceCard data={place} key={idx} /> : ''
   // }
   // const places = [
   //   {
   //     condition: !searchWord && !filterData.length,
-  //     component: <PlaceCard1 data={place} key={idx} />
+  //     component: <PlaceCard data={place} key={idx} />
   //   },
   //   {
   //     condition: !searchWord && !filterData.length,
-  //     component: <PlaceCard1 data={place} key={idx} />
+  //     component: <PlaceCard data={place} key={idx} />
   //   },
   //   {
   //     condition: !searchWord && !filterData.length,
-  //     component: <PlaceCard1 data={place} key={idx} />
+  //     component: <PlaceCard data={place} key={idx} />
   //   },
   //       {
   //     condition: !searchWord && !filterData.length,
-  //     component: <PlaceCard1 data={place} key={idx} />
+  //     component: <PlaceCard data={place} key={idx} />
   //   },
 
   // ]
@@ -112,13 +112,13 @@ const Listpage = () => {
 
             {!searchWord && !filterData.length
               ? data.data.map((place, idx) => (
-                  <PlaceCard1 data={place} key={idx} />
+                  <PlaceCard data={place} key={idx} />
                 ))
               : ""}
             {filterData.length && searchWord ? (
               realData
                 .filter((place) => searchWord === place.name)
-                .map((place, idx) => <PlaceCard1 data={place} key={idx} />)
+                .map((place, idx) => <PlaceCard data={place} key={idx} />)
             ) : filterData.length && searchWord && !realData ? (
               <EmptyData />
             ) : (
@@ -126,7 +126,7 @@ const Listpage = () => {
             )}
 
             {filterData.length && !searchWord && realData.length ? (
-              realData.map((data, idx) => <PlaceCard1 data={data} key={idx} />)
+              realData.map((data, idx) => <PlaceCard data={data} key={idx} />)
             ) : !realData.length && filterData.length ? (
               <EmptyData />
             ) : (
@@ -135,7 +135,7 @@ const Listpage = () => {
             {searchWord && !filterData.length
               ? data.data
                   .filter((place) => searchWord === place.name)
-                  .map((place, idx) => <PlaceCard1 data={place} key={idx} />)
+                  .map((place, idx) => <PlaceCard data={place} key={idx} />)
               : ""}
             {searchWord &&
             !data.data.filter((place) => searchWord === place.name).length ? (

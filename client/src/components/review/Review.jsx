@@ -13,16 +13,16 @@ import useMamber from "../../store/MemberStore";
 import { useGetMyInfo } from "../../hooks/useAPI";
 import Loading from "../ui/Loading";
 import jwt_decode from "jwt-decode";
+import { useSWRConfig } from "swr";
 
 const Review = ({ reply }) => {
   const { id } = useParams();
+  const [replyData, setReplyData] = useState(reply);
   const [isEdit, setIsEdit] = useState(false);
   const [editReply, setEditReply] = useState(reply.context);
   const [editScore, setEditScore] = useState(reply.score);
   const { setReplyId, setContext, setScore, setPlaceId } = usePostReview();
   const { user, setUser } = useMamber();
-
-  console.log("user", user)
 
   useEffect(() => {
     return () => {
@@ -34,32 +34,46 @@ const Review = ({ reply }) => {
   }, []);
 
   useEffect(() => {
-      const decoded = jwt_decode(localStorage.getItem("access_Token"));
-      setUser(decoded.userId);
+    const decoded = jwt_decode(localStorage.getItem("access_Token"));
+    setUser(decoded.userId);
   }, []);
 
+  const { mutate } = useSWRConfig();
   const { data, isLoading, isError } = useGetMyInfo();
   if (isLoading) return <Loading />;
   if (isError) return <div>ERR...</div>;
 
   const config = {
-    replyId: reply.replyId,
+    replyId: replyData.replyId,
     context: editReply,
     score: editScore,
+    userId: replyData.userId,
   };
 
-  const onUpdate = () => {
-    console.log("updateConfig", config);
+  const onUpdate = async () => {
     if (!editScore) {
       toast("평점을 선택해 주세요!", { icon: "📝", ...ToastInfo });
       return;
     }
-    const updateReply = useUpdataReply(config, id, reply.replyId);
-    updateReply()
-      .then((res) => console.log(res))
-      .then(() => setContext(""), setScore(""));
-    setIsEdit(false);
+    // const updateReply = useUpdataReply(config, id, replyData.replyId);
+    // updateReply().then(() => setContext(""), setScore(""));
     // window.location.reload();
+
+    await mutate(
+      `/api/v1/place/${id}/reply/${replyData.id}`,
+      useUpdataReply(config, id, replyData.replyId),
+      {
+        optimisticData: setReplyData(config),
+        rollbackOnError: true,
+        populateCache: true,
+        revalidate: false,
+      }
+    );
+    setIsEdit(false);
+    setContext("");
+    setScore("");
+
+    console.log("onUpdate : ", replyData);
   };
 
   const handleCancel = () => {
@@ -74,7 +88,6 @@ const Review = ({ reply }) => {
   const onDelete = () => {
     if (window.confirm("삭제하시겠습니까?")) {
       useDeleteReply(reply.replyId);
-      console.log(reply.replyId);
     }
   };
 
@@ -92,13 +105,13 @@ const Review = ({ reply }) => {
               )}
             </User>
             <div className="userDate">
-              <div className="userName">{reply.userId}</div>
+              <div className="userName">{replyData.userId}</div>
               <div className="postDate">2022.09.29</div>
             </div>
           </div>
           {!isEdit ? (
             <div className="originScore">
-              <Star /> 평점 {reply.score ? reply.score : 1}
+              <Star /> 평점 {replyData.score ? replyData.score : 1}
             </div>
           ) : (
             <div className="scoreInput">
@@ -134,7 +147,7 @@ const Review = ({ reply }) => {
           </EditForm>
         ) : (
           <OriginReply>
-            <p className="reviewContent">{reply.context}</p>
+            <p className="reviewContent">{replyData.context}</p>
             {user === reply.userId ? (
               <div className="buttons">
                 <div className="button" onClick={handleUpdate}>

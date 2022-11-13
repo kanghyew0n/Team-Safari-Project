@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import PlaceCard1 from "../cards/PlaceCard1";
+import PlaceCard from "../cards/PlaceCard";
 import { BREAK_POINT_TABLET } from "../../constant";
 import useMenu from "../../store/MenuStore";
 import { useGetMypageData } from "../../hooks/useAPI";
@@ -20,21 +20,18 @@ const MySummary = ({ place }) => {
       <Myplace>
         <Info>
           <h2>최근 내가 등록한 장소</h2>
-          {/* <span onClick={() => setMenu("내가 등록한 장소")}>더보기</span> */}
         </Info>
         <MyplaceCards grid={!place.data.length ? "auto" : ""}>
           {place.data.length ? place.data
             .filter((data, idx) => idx < 3)
             .map((place) => (
-              <PlaceCard1 key={place.placeId} data={place} />
+              <PlaceCard key={place.placeId} data={place} />
             )) : <EmptyData width={"100%"} text={"아직 등록한 장소가 없어요"}/>}
         </MyplaceCards>
       </Myplace>
       <MyReview>
         <Info>
           <h2>내가 작성한 후기</h2>
-
-          {/* <span onClick={() => setMenu("내가 작성한 후기")}>더보기</span> */}
         </Info>
         <MyReviewCards >
           {data.data.length ? data.data
